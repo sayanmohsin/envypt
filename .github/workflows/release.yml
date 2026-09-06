@@ -171,7 +171,7 @@ jobs:
           ref: v${{ needs.release-please.outputs.version }}
       - uses: dtolnay/rust-toolchain@stable
       - name: Publish to crates.io
-        run: cargo publish -p open-envault --locked
+        run: cargo publish -p open-envault
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
