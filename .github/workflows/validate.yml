@@ -37,3 +37,9 @@ jobs:
       - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo doc --workspace --no-deps
       - run: cargo build --release --workspace
+      - name: Cross-tool interop with official sops
+        run: |
+          mkdir -p "$RUNNER_TEMP/sops"
+          curl -sL -o "$RUNNER_TEMP/sops/sops" https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
+          chmod +x "$RUNNER_TEMP/sops/sops"
+          SOPS_BIN="$RUNNER_TEMP/sops/sops" cargo test -p openenvcrypt-crypto --test interop

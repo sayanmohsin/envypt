@@ -106,7 +106,10 @@ fn main() -> Result<()> {
             command,
         } => {
             let (path, p) = profile(&environment)?;
-            let values = parse_env(&openenvcrypt_crypto::decrypt(&root(&path).join(&p.file))?);
+            let values = parse_env(&openenvcrypt_crypto::decrypt_for(
+                &root(&path).join(&p.file),
+                Some(&environment),
+            )?);
             std::process::exit(openenvcrypt_runtime::exec(&command, &values)?);
         }
         CommandKind::Doctor => {
@@ -178,7 +181,10 @@ fn generate_key(name: &str) -> Result<()> {
 }
 fn check(name: &str, format: Format) -> Result<()> {
     let (path, p) = profile(name)?;
-    let values = parse_env(&openenvcrypt_crypto::decrypt(&root(&path).join(&p.file))?);
+    let values = parse_env(&openenvcrypt_crypto::decrypt_for(
+        &root(&path).join(&p.file),
+        Some(name),
+    )?);
     let findings = validate(&load_schema(&root(&path).join(&p.schema))?, &values, name);
     match format {
         Format::Human => {
@@ -198,7 +204,10 @@ fn edit(name: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
     let tmp = r.join(format!(".openenvcrypt-edit-{}", std::process::id()));
-    fs::write(&tmp, openenvcrypt_crypto::decrypt(&r.join(&p.file))?)?;
+    fs::write(
+        &tmp,
+        openenvcrypt_crypto::decrypt_for(&r.join(&p.file), Some(name))?,
+    )?;
     let editor = p
         .editor
         .or_else(|| env::var("EDITOR").ok())
@@ -215,7 +224,13 @@ fn edit(name: &str) -> Result<()> {
 fn set(name: &str, variable: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
-    let mut values = parse_env(&openenvcrypt_crypto::decrypt(&r.join(&p.file))?);
+    let encrypted = r.join(&p.file);
+    let plain = if encrypted.exists() {
+        openenvcrypt_crypto::decrypt_for(&encrypted, Some(name))?
+    } else {
+        String::new()
+    };
+    let mut values = parse_env(&plain);
     eprint!("value for {variable}: ");
     io::stderr().flush()?;
     let mut value = String::new();

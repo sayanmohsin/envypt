@@ -43,6 +43,18 @@ CLI; they never reimplement crypto.
 - Encrypted writes must be atomic (temp file + rename) and key files must be
   mode 0600. Fail closed on invalid config, schema, key, or ciphertext.
 - When a `.env.example`/docs change is made, keep it in sync with the schema.
+- Test fixtures under `crates/*/tests/fixtures/` (plaintext sample `.env`
+  files and `age-identity-*.txt` keys) are throwaway and decrypt only fake
+  fixture data. They are never used with real secrets; keep other key material
+  out of the tree.
+
+## Crypto
+
+`openenvcrypt-crypto` implements the SOPS dotenv format natively (age
+recipients + AES-256-GCM `ENC[...]` values + flattened `sops_*` metadata). No
+external `sops`/`rage` binaries are required at runtime. Byte compatibility is
+guarded by golden fixtures produced with official `sops` plus an optional
+cross-tool test: set `SOPS_BIN` to a real `sops` binary to enable it.
 
 ## Conventions
 
