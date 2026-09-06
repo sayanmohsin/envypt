@@ -4,7 +4,7 @@
   "description": "Local-first encrypted environment files (SOPS-compatible age)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sayanmohsin/envypt.git"
+    "url": "git+https://github.com/sayanmohsin/envypt.git"
   },
   "homepage": "https://github.com/sayanmohsin/envypt#readme",
   "bugs": {
