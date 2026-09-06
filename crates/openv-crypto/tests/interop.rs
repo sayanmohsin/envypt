@@ -15,7 +15,8 @@ fn fixtures() -> PathBuf {
 }
 
 fn read(name: &str) -> String {
-    fs::read_to_string(fixtures().join(name)).expect("read fixture")
+    let path = fixtures().join(name);
+    fs::read_to_string(&path).unwrap_or_else(|e| panic!("read fixture {}: {e}", path.display()))
 }
 
 fn dev_identity() -> Identity {
