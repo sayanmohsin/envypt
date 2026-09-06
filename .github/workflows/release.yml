@@ -1,0 +1,186 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish_version:
+        description: "Existing envypt version to retry, for example 0.1.0"
+        required: false
+        type: string
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Create or finalize release PR
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.releases_created || steps.manual.outputs.release_created }}
+      retry: ${{ steps.manual.outputs.retry }}
+      version: ${{ steps.version.outputs.version || steps.manual.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Validate release contract
+        run: bun scripts/check-version.mjs
+      - name: Create release App token
+        id: app-token
+        if: inputs.publish_version == ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: envypt
+      - name: Run Release Please
+        id: release
+        if: inputs.publish_version == ''
+        uses: googleapis/release-please-action@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - name: Resolve release version
+        id: version
+        if: steps.release.outputs.releases_created == 'true'
+        run: |
+          version=$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).version')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Normalize manual retry
+        id: manual
+        if: inputs.publish_version != ''
+        env:
+          VERSION: ${{ inputs.publish_version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "publish_version must be a full SemVer value" >&2
+            exit 1
+          fi
+          echo "release_created=true" >> "$GITHUB_OUTPUT"
+          echo "retry=true" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.target }}
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' || needs.release-please.outputs.retry == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+          - target: x86_64-apple-darwin
+            runner: macos-14
+          - target: aarch64-apple-darwin
+            runner: macos-14
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: v${{ needs.release-please.outputs.version }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Install cross
+        if: startsWith(matrix.target, 'aarch64-unknown-linux')
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+      - name: Build envypt
+        shell: bash
+        run: |
+          if [[ "${{ matrix.target }}" == aarch64-unknown-linux* ]]; then
+            cross build --release --manifest-path Cargo.toml --target "${{ matrix.target }}"
+          else
+            cargo build --release --manifest-path Cargo.toml --target "${{ matrix.target }}"
+          fi
+      - name: Package binary
+        shell: bash
+        run: |
+          mkdir -p release
+          suffix=""
+          if [[ "${{ matrix.target }}" == *windows* ]]; then suffix=".exe"; fi
+          cp "target/${{ matrix.target }}/release/envypt${suffix}" "release/envypt-${{ matrix.target }}${suffix}"
+          asset="envypt-${{ matrix.target }}${suffix}"
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            hash=$(powershell -NoProfile -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath 'release/$asset').Hash.ToLower()")
+            printf '%s  %s\n' "$hash" "$asset" > "release/checksum-${{ matrix.target }}.txt"
+          else
+            (cd release && shasum -a 256 "$asset" > "checksum-${{ matrix.target }}.txt")
+          fi
+      - uses: actions/upload-artifact@v6
+        with:
+          name: binary-${{ matrix.target }}
+          path: release/*
+
+  github-release:
+    name: Publish GitHub Release
+    needs: [release-please, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+      - name: Prepare release assets
+        run: |
+          mkdir release
+          find artifacts -type f ! -name 'checksum-*' -exec cp {} release/ \;
+          find artifacts -type f -name 'checksum-*' -exec cat {} \; | sort -k2 > release/checksums.txt
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          if gh release view "v$VERSION" --repo sayanmohsin/envypt >/dev/null 2>&1; then
+            gh release upload "v$VERSION" --repo sayanmohsin/envypt release/* --clobber
+          else
+            gh release create "v$VERSION" --repo sayanmohsin/envypt release/* --title "v$VERSION" --generate-notes
+          fi
+
+  npm-publish:
+    name: Publish npm package
+    needs: [release-please, github-release]
+    if: needs.release-please.outputs.release_created == 'true' || needs.release-please.outputs.retry == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: npm-publish
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: v${{ needs.release-please.outputs.version }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Publish if missing
+        env:
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          if npm view "@sayanmohsin/envypt@$VERSION" version >/dev/null 2>&1; then
+            echo "@sayanmohsin/envypt@$VERSION already exists"
+          else
+            npm publish --provenance --access public
+          fi
