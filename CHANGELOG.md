@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/sayanmohsin/open-envault/compare/v0.2.1...v0.2.2) (2026-09-06)
+
+
+### Bug Fixes
+
+* correct binary error message in oenv wrapper ([0f96a97](https://github.com/sayanmohsin/open-envault/commit/0f96a9744e602358581d1fd1eae720a3887e82d9))
+
 ## [0.2.1](https://github.com/sayanmohsin/open-envault/compare/v0.2.0...v0.2.1) (2026-09-06)
 
 
