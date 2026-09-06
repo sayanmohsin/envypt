@@ -5,14 +5,14 @@
 [![CI](https://github.com/sayanmohsin/envypt/actions/workflows/validate.yml/badge.svg)](https://github.com/sayanmohsin/envypt/actions/workflows/validate.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg)](LICENSE)
 
-**Local-first, SOPS-compatible encrypted dotenv.** Ciphertext lives in Git; private age keys stay on your machines; secrets are injected into child processes only at runtime — no plaintext `.env` files, no hosted service, no custom crypto.
+**Local-first, SOPS-compatible secrets for Git and Rust.** Push ciphertext to Git; keep private age keys on your machines; inject secrets into child processes only at runtime — no hosted service, no custom crypto.
 
-Works with Rust (Arqen), TypeScript/NestJS, and any language that can spawn a child process. Encrypted files are plain [SOPS](https://getsops.io) age files, so official `sops` can decrypt them and `envypt` can decrypt files produced by `sops`.
+Built for Rust projects and any language that spawns a child process (Arqen, NestJS, Go via CLI). Encrypted files are plain [SOPS](https://getsops.io) age files — `sops` can decrypt what `envypt` encrypts and vice versa.
 
 ## Features
 
-- **One binary, one format** — native Rust, no `sops`/`rage` required at runtime, yet byte-compatible with `sops` 3.13 age
-- **Git-native** — `envypt.yaml`, `config/env.schema.yaml`, `secrets/*.env.enc` and `public age recipients` go in Git; private keys never do
+- **Rust-first, one binary** — native Rust, no `sops`/`rage` needed at runtime, byte-compatible with `sops` 3.13 age
+- **Push to Git** — `envypt.yaml`, `config/env.schema.yaml`, `secrets/*.enc` and public age recipients live in Git; private keys never do
 - **Fail-closed** — bad config/schema/key/ciphertext → non-zero exit, redacted diagnostics
 - **Memory-only secrets** — data keys and values are zeroized, never logged or written to disk (atomic writes, 0600 key files)
 - **Schema & diagnostics** — `string`/`integer`/`boolean`/`url`/`enum`/`duration` + `required`/`secret`/`env` guards, human + stable JSON output
@@ -119,4 +119,4 @@ See [`docs/architecture.md`](docs/architecture.md) and [`docs/contract.md`](docs
 
 ## License
 
-Dual-licensed under Apache 2.0 or MIT, at your option.
+Code dual-licensed under Apache 2.0 or MIT, at your option. Documentation and course materials additionally available as OpenCourse under CC BY 4.0 — see `LICENSE`, `LICENSE-APACHE`, `LICENSE-MIT`.
