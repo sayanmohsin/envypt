@@ -10,7 +10,7 @@ use std::{
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "open_envault", version, about = "Secure encrypted environment files")]
+#[command(name = "oenv", version, about = "Secure encrypted environment files")]
 struct Cli {
     #[command(subcommand)]
     command: CommandKind,
@@ -147,7 +147,7 @@ fn init() -> Result<()> {
     if !r.join(".sops.yaml").exists() {
         fs::write(r.join(".sops.yaml"), "creation_rules: []\n")?;
     }
-    eprintln!("initialized open_envault project");
+    eprintln!("initialized open-envault project");
     Ok(())
 }
 

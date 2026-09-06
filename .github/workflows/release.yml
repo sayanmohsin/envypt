@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_version:
-        description: "Existing envypt version to retry, for example 0.1.0"
+        description: "Existing open-envault version to retry, for example 0.1.0"
         required: false
         type: string
 
@@ -44,7 +44,7 @@ jobs:
           client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: envypt
+          repositories: open-envault
       - name: Run Release Please
         id: release
         if: inputs.publish_version == ''
@@ -104,7 +104,7 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: cross
-      - name: Build envypt
+      - name: Build oenv
         shell: bash
         run: |
           if [[ "${{ matrix.target }}" == aarch64-unknown-linux* ]]; then
@@ -118,8 +118,8 @@ jobs:
           mkdir -p release
           suffix=""
           if [[ "${{ matrix.target }}" == *windows* ]]; then suffix=".exe"; fi
-          cp "target/${{ matrix.target }}/release/envypt${suffix}" "release/envypt-${{ matrix.target }}${suffix}"
-          asset="envypt-${{ matrix.target }}${suffix}"
+          cp "target/${{ matrix.target }}/release/oenv${suffix}" "release/oenv-${{ matrix.target }}${suffix}"
+          asset="oenv-${{ matrix.target }}${suffix}"
           if [[ "${{ matrix.target }}" == *windows* ]]; then
             hash=$(powershell -NoProfile -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath 'release/$asset').Hash.ToLower()")
             printf '%s  %s\n' "$hash" "$asset" > "release/checksum-${{ matrix.target }}.txt"
@@ -151,10 +151,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.release-please.outputs.version }}
         run: |
-          if gh release view "v$VERSION" --repo sayanmohsin/envypt >/dev/null 2>&1; then
-            gh release upload "v$VERSION" --repo sayanmohsin/envypt release/* --clobber
+          if gh release view "v$VERSION" --repo sayanmohsin/open-envault >/dev/null 2>&1; then
+            gh release upload "v$VERSION" --repo sayanmohsin/open-envault release/* --clobber
           else
-            gh release create "v$VERSION" --repo sayanmohsin/envypt release/* --title "v$VERSION" --generate-notes
+            gh release create "v$VERSION" --repo sayanmohsin/open-envault release/* --title "v$VERSION" --generate-notes
           fi
 
   npm-publish:
@@ -179,8 +179,8 @@ jobs:
         env:
           VERSION: ${{ needs.release-please.outputs.version }}
         run: |
-          if npm view "@sayanmohsin/envypt@$VERSION" version >/dev/null 2>&1; then
-            echo "@sayanmohsin/envypt@$VERSION already exists"
+          if npm view "open-envault@$VERSION" version >/dev/null 2>&1; then
+            echo "open-envault@$VERSION already exists"
           else
             npm publish --provenance --access public
           fi

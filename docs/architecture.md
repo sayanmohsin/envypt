@@ -34,7 +34,7 @@ Single crate `open-envault` (`crates/open-envault`) provides the library + binar
 | `open-envault::runtime` | Child process execution, environment merging, signal forwarding, exit-code propagation. |
 | `open-envault::output` | Redaction, one-way fingerprinting, JSON envelopes, shared error/exit-code contract. |
 
-Public API: `open-envault::load_environment` (library, consumed by Arqen). Binary `open-envault` (`src/main.rs`) handles the CLI.
+Public API: `open_envault::load_environment` (library, consumed by Arqen). Binary `open-envault` (`src/main.rs`) handles the CLI.
 
 ## Project layout on disk
 

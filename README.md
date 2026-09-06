@@ -17,13 +17,13 @@ Built for Rust projects and any language that spawns a child process (Arqen, Nes
 - **Fail-closed** — bad config/schema/key/ciphertext → non-zero exit, redacted diagnostics
 - **Memory-only secrets** — data keys and values are zeroized, never logged or written to disk (atomic writes, 0600 key files)
 - **Schema & diagnostics** — `string`/`integer`/`boolean`/`url`/`enum`/`duration` + `required`/`secret`/`env` guards, human + stable JSON output
-- **Runtime injection** — `open-envault exec dev -- <cmd>` merges decrypted values into the child’s env and preserves exit codes/signals
+- **Runtime injection** — `oenv exec dev -- <cmd>` merges decrypted values into the child’s env and preserves exit codes/signals
 
 ## Install
 
 ```bash
 # Rust (binary + library)
-cargo install open-envault              # bin `open-envault`
+cargo install open-envault              # bin `oenv`
 # or library for Arqen:
 # cargo add open-envault
 
@@ -32,18 +32,18 @@ npm i -D open-envault
 # or pnpm / yarn / bun
 ```
 
-Prebuilt binaries are attached to each [GitHub Release](https://github.com/sayanmohsin/open-envault/releases) (`open-envault-<target>` + `checksums.txt`).
+Prebuilt binaries are attached to each [GitHub Release](https://github.com/sayanmohsin/open-envault/releases) (`oenv-<target>` + `checksums.txt`).
 
 ## Quick start
 
 ```bash
-open-envault init                       # creates open-envault.yaml, config/env.schema.yaml, secrets/, .sops.yaml
-open-envault env create dev
-open-envault key generate dev           # → prints # public key: age1...  (add it to open-envault.yaml recipients)
+oenv init                       # creates open-envault.yaml, config/env.schema.yaml, secrets/, .sops.yaml
+oenv env create dev
+oenv key generate dev           # → prints # public key: age1...  (add it to open-envault.yaml recipients)
 # edit open-envault.yaml: recipients: [age1...]
-open-envault set dev DATABASE_URL       # value read from stdin (never argv)
-open-envault check dev --format json
-open-envault exec dev -- npm start
+oenv set dev DATABASE_URL       # value read from stdin (never argv)
+oenv check dev --format json
+oenv exec dev -- npm start
 ```
 
 `open-envault.yaml` example:
@@ -60,17 +60,17 @@ environments:
 ## CLI
 
 ```
-open-envault init
-open-envault env create <env>
-open-envault key generate <env>
+oenv init
+oenv env create <env>
+oenv key generate <env>
 open-envault set <env> <VAR>            # reads value from stdin
 open-envault edit <env>                 # $EDITOR on a secure temp file
 open-envault check <env> [--format human|json]
-open-envault doctor [--format json]
-open-envault diff <envA> <envB> [--format json]
-open-envault rotate <env>
-open-envault exec <env> -- <cmd> [args...]
-open-envault example                    # regenerate .env.example from schema
+oenv doctor [--format json]
+oenv diff <envA> <envB> [--format json]
+oenv rotate <env>
+oenv exec <env> -- <cmd> [args...]
+oenv example                    # regenerate .env.example from schema
 ```
 
 `set` never takes a value on the command line; `exec` forwards signals and preserves the child’s exit code; diagnostics never print secret values (one-way `HMAC-SHA256` fingerprints only).
@@ -106,7 +106,7 @@ open-envault = "0.1"
 ```
 
 ```rust
-let env = open-envault::load_environment("dev")?; // BTreeMap<String,String>, memory-only
+let env = open_envault::load_environment("dev")?; // BTreeMap<String,String>, memory-only
 ```
 
 ## Security
