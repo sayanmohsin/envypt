@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-cargo install envypt-cli          # Rust binary `envypt`
+cargo install envypt              # Rust binary `envypt`
 npm i -D @sayanmohsin/envypt     # Node wrapper (prebuilds/<platform>-<arch>/envypt)
 ```
 
@@ -33,7 +33,7 @@ It decrypts `secrets/<env>.env.enc` with an age identity from `~/.config/envypt/
 
 ```yaml
 - uses: actions/checkout@v4
-- run: cargo install envypt-cli
+- run: cargo install envypt
 - env:
     SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
   run: envypt exec prod -- cargo run

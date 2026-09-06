@@ -22,7 +22,7 @@ Built for Rust projects and any language that spawns a child process (Arqen, Nes
 
 ```bash
 # Rust (binary + library)
-cargo install envypt-cli          # bin `envypt`
+cargo install envypt              # bin `envypt`
 # or library for Arqen:
 # cargo add envypt
 
