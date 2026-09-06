@@ -1,5 +1,5 @@
+use crate::output::Finding;
 use anyhow::{Context, bail};
-use envypt_output::Finding;
 use serde::Deserialize;
 use std::{collections::BTreeMap, fs, path::Path};
 

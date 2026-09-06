@@ -11,7 +11,7 @@ use sha2::{Digest, Sha512};
 use std::collections::BTreeMap;
 use zeroize::Zeroize;
 
-use crate::{
+use super::{
     keys::{self, Identity, Recipient},
     util, value,
 };

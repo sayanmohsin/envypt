@@ -7,7 +7,7 @@
 //! an additional cross-tool test verifies that our encrypted output decrypts
 //! with official SOPS.
 
-use envypt_crypto::keys::{self, Identity};
+use envypt::crypto::keys::{self, Identity};
 use std::{fs, path::PathBuf, process::Command};
 
 fn fixtures() -> PathBuf {
@@ -31,7 +31,7 @@ fn ci_identity() -> Identity {
 fn decrypt_sops_single_recipient() {
     let encrypted = read("dev.env.enc");
     let plaintext = read("dev.env");
-    let out = envypt_crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap();
+    let out = envypt::crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap();
     assert_eq!(out, plaintext);
 }
 
@@ -40,11 +40,11 @@ fn decrypt_sops_multi_recipient_with_either_key() {
     let encrypted = read("multi.env.enc");
     let plaintext = read("dev.env");
     assert_eq!(
-        envypt_crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap(),
+        envypt::crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap(),
         plaintext
     );
     assert_eq!(
-        envypt_crypto::store::decrypt(&encrypted, &[ci_identity()]).unwrap(),
+        envypt::crypto::store::decrypt(&encrypted, &[ci_identity()]).unwrap(),
         plaintext
     );
 }
@@ -52,7 +52,7 @@ fn decrypt_sops_multi_recipient_with_either_key() {
 #[test]
 fn wrong_key_is_rejected() {
     let encrypted = read("dev.env.enc");
-    let err = envypt_crypto::store::decrypt(&encrypted, &[ci_identity()]).unwrap_err();
+    let err = envypt::crypto::store::decrypt(&encrypted, &[ci_identity()]).unwrap_err();
     let text = format!("{err:#}");
     assert!(
         text.contains("no configured identity") || text.contains("wrong key"),
@@ -70,7 +70,7 @@ fn tampered_value_is_rejected() {
         .map(|i| pos + marker.len() + i)
         .expect("find a base64 char to flip");
     encrypted.replace_range(replace_at..replace_at + 1, "B");
-    assert!(envypt_crypto::store::decrypt(&encrypted, &[dev_identity()]).is_err());
+    assert!(envypt::crypto::store::decrypt(&encrypted, &[dev_identity()]).is_err());
 }
 
 #[test]
@@ -79,14 +79,14 @@ fn tampered_mac_is_rejected() {
     let pos = encrypted.find("sops_mac=").expect("find sops_mac");
     let value_start = pos + "sops_mac=".len();
     encrypted.replace_range(value_start..value_start + 1, "B");
-    assert!(envypt_crypto::store::decrypt(&encrypted, &[dev_identity()]).is_err());
+    assert!(envypt::crypto::store::decrypt(&encrypted, &[dev_identity()]).is_err());
 }
 
 #[test]
 fn plaintext_features_roundtrip_through_our_encrypt() {
     let plaintext = read("dev.env");
     let dev_recipient = read_recipient_of("age-identity-dev.txt");
-    let encrypted = envypt_crypto::store::encrypt(&plaintext, &[dev_recipient]).unwrap();
+    let encrypted = envypt::crypto::store::encrypt(&plaintext, &[dev_recipient]).unwrap();
 
     // Comments and empty values keep their on-disk shape; unencrypted suffix
     // values stay plaintext.
@@ -113,29 +113,29 @@ fn plaintext_features_roundtrip_through_our_encrypt() {
         last = idx;
     }
 
-    let decrypted = envypt_crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap();
+    let decrypted = envypt::crypto::store::decrypt(&encrypted, &[dev_identity()]).unwrap();
     assert_eq!(decrypted, plaintext);
 }
 
 #[test]
 fn list_recipients_matches_metadata() {
-    let dev = envypt_crypto::store::list_recipients(&read("dev.env.enc")).unwrap();
+    let dev = envypt::crypto::store::list_recipients(&read("dev.env.enc")).unwrap();
     assert_eq!(dev.len(), 1);
-    let multi = envypt_crypto::store::list_recipients(&read("multi.env.enc")).unwrap();
+    let multi = envypt::crypto::store::list_recipients(&read("multi.env.enc")).unwrap();
     assert_eq!(multi.len(), 2);
 }
 
 #[test]
 fn empty_and_reserved_keys_fail_closed() {
     let recipient = read_recipient_of("age-identity-dev.txt");
-    let err = envypt_crypto::store::encrypt("A=1", &[]).unwrap_err();
+    let err = envypt::crypto::store::encrypt("A=1", &[]).unwrap_err();
     assert!(format!("{err:#}").contains("no age recipients"));
 
-    let err =
-        envypt_crypto::store::encrypt("sops_evil=1", std::slice::from_ref(&recipient)).unwrap_err();
+    let err = envypt::crypto::store::encrypt("sops_evil=1", std::slice::from_ref(&recipient))
+        .unwrap_err();
     assert!(format!("{err:#}").contains("reserved"));
 
-    let err = envypt_crypto::store::encrypt("A=1\nnot-a-key\n", &[recipient]).unwrap_err();
+    let err = envypt::crypto::store::encrypt("A=1\nnot-a-key\n", &[recipient]).unwrap_err();
     assert!(format!("{err:#}").contains("invalid dotenv line"));
 }
 
@@ -156,7 +156,7 @@ fn official_sops_can_decrypt_our_output() {
     };
     let plaintext = read("dev.env");
     let recipient = read_recipient_of("age-identity-dev.txt");
-    let encrypted = envypt_crypto::store::encrypt(&plaintext, &[recipient]).unwrap();
+    let encrypted = envypt::crypto::store::encrypt(&plaintext, &[recipient]).unwrap();
 
     let dir = tempfile::tempdir().unwrap();
     let enc_path = dir.path().join("ours.env.enc");

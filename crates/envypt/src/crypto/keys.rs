@@ -121,7 +121,7 @@ pub fn generate_identity() -> Result<(String, String)> {
     let secret = identity.to_string();
     let text = format!(
         "# created: {}\n# public key: {}\n{}\n",
-        crate::util::date_utc_today(),
+        super::util::date_utc_today(),
         recipient,
         secret.expose_secret()
     );

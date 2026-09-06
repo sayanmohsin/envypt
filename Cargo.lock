@@ -408,75 +408,19 @@ dependencies = [
 name = "envypt"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "envypt-core",
- "envypt-crypto",
- "envypt-output",
- "envypt-runtime",
- "envypt-schema",
-]
-
-[[package]]
-name = "envypt-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "envypt-core",
- "envypt-crypto",
- "envypt-output",
- "envypt-runtime",
- "envypt-schema",
-]
-
-[[package]]
-name = "envypt-core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "serde",
- "serde_yaml",
-]
-
-[[package]]
-name = "envypt-crypto"
-version = "0.1.0"
-dependencies = [
  "aes-gcm",
  "age",
  "anyhow",
  "base64 0.22.1",
+ "clap",
  "hex",
  "rand",
+ "serde",
+ "serde_json",
+ "serde_yaml",
  "sha2 0.11.0",
  "tempfile",
  "zeroize",
-]
-
-[[package]]
-name = "envypt-output"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "envypt-runtime"
-version = "0.1.0"
-dependencies = [
- "anyhow",
-]
-
-[[package]]
-name = "envypt-schema"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "envypt-output",
- "serde",
- "serde_yaml",
 ]
 
 [[package]]

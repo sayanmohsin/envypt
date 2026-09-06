@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
-use envypt_core::{Project, discover, environment, load};
-use envypt_schema::{example, load as load_schema, parse_env, validate};
+use envypt::core::{Project, discover, environment, load};
+use envypt::schema::{example, load as load_schema, parse_env, validate};
 use std::{
     env, fs,
     io::{self, Write},
@@ -71,7 +71,7 @@ fn project() -> Result<(PathBuf, Project)> {
     let path = discover(&env::current_dir()?)?;
     Ok((path.clone(), load(&path)?))
 }
-fn profile(name: &str) -> Result<(PathBuf, envypt_core::Environment)> {
+fn profile(name: &str) -> Result<(PathBuf, envypt::core::Environment)> {
     let (path, project) = project()?;
     Ok((path, environment(&project, name)?.clone()))
 }
@@ -102,11 +102,11 @@ fn main() -> Result<()> {
             command,
         } => {
             let (path, p) = profile(&environment)?;
-            let values = parse_env(&envypt_crypto::decrypt_for(
+            let values = parse_env(&envypt::crypto::decrypt_for(
                 &root(&path).join(&p.file),
                 Some(&environment),
             )?);
-            std::process::exit(envypt_runtime::exec(&command, &values)?);
+            std::process::exit(envypt::runtime::exec(&command, &values)?);
         }
         CommandKind::Doctor => {
             let _ = project()?;
@@ -165,7 +165,7 @@ fn generate_key(name: &str) -> Result<()> {
     } else {
         key_path
     };
-    let key = envypt_crypto::generate_key(&key_path)?;
+    let key = envypt::crypto::generate_key(&key_path)?;
     println!(
         "{}",
         key.lines()
@@ -177,7 +177,7 @@ fn generate_key(name: &str) -> Result<()> {
 }
 fn check(name: &str, format: Format) -> Result<()> {
     let (path, p) = profile(name)?;
-    let values = parse_env(&envypt_crypto::decrypt_for(
+    let values = parse_env(&envypt::crypto::decrypt_for(
         &root(&path).join(&p.file),
         Some(name),
     )?);
@@ -192,7 +192,7 @@ fn check(name: &str, format: Format) -> Result<()> {
                 }
             }
         }
-        Format::Json => println!("{}", envypt_output::json(&findings)?),
+        Format::Json => println!("{}", envypt::output::json(&findings)?),
     };
     Ok(())
 }
@@ -202,7 +202,7 @@ fn edit(name: &str) -> Result<()> {
     let tmp = r.join(format!(".envypt-edit-{}", std::process::id()));
     fs::write(
         &tmp,
-        envypt_crypto::decrypt_for(&r.join(&p.file), Some(name))?,
+        envypt::crypto::decrypt_for(&r.join(&p.file), Some(name))?,
     )?;
     let editor = p
         .editor
@@ -215,14 +215,14 @@ fn edit(name: &str) -> Result<()> {
     }
     let content = fs::read_to_string(&tmp)?;
     let _ = fs::remove_file(&tmp);
-    envypt_crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
+    envypt::crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
 }
 fn set(name: &str, variable: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
     let encrypted = r.join(&p.file);
     let plain = if encrypted.exists() {
-        envypt_crypto::decrypt_for(&encrypted, Some(name))?
+        envypt::crypto::decrypt_for(&encrypted, Some(name))?
     } else {
         String::new()
     };
@@ -236,5 +236,5 @@ fn set(name: &str, variable: &str) -> Result<()> {
         .into_iter()
         .map(|(k, v)| format!("{k}={v}\n"))
         .collect();
-    envypt_crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
+    envypt::crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
 }
