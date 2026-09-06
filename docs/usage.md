@@ -3,8 +3,8 @@
 ## Install
 
 ```bash
-cargo install open-envault              # Rust binary `open-envault`
-npm i -D open-envault     # Node wrapper (prebuilds/<platform>-<arch>/open-envault)
+cargo install open-envault              # Rust binary `oenv` (package `open-envault`)
+npm i -D open-envault     # Node wrapper (prebuilds/<platform>-<arch>/oenv)
 ```
 
 ## Project setup

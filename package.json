@@ -24,7 +24,7 @@
     "node": ">=20"
   },
   "bin": {
-    "oenv": "bin/open-envault.mjs"
+    "oenv": "bin/oenv.mjs"
   },
   "files": [
     "bin/",
