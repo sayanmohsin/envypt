@@ -1,4 +1,4 @@
-# openenvcrypt
+# openv
 
 Local-first encrypted environment files for Rust projects and deployment
 servers. Ciphertext belongs in Git; private keys stay on authorized machines,
@@ -18,12 +18,12 @@ are still being built out.
 ## Usage (work in progress)
 
 ```text
-openenvcrypt init
-openenvcrypt env create dev
-openenvcrypt key generate dev
-openenvcrypt set dev SECRET_TOKEN     # value read from stdin
-openenvcrypt check dev
-openenvcrypt exec dev -- npm start
+openv init
+openv env create dev
+openv key generate dev
+openv set dev SECRET_TOKEN     # value read from stdin
+openv check dev
+openv exec dev -- npm start
 ```
 
 ## Security

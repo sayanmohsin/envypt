@@ -1,5 +1,5 @@
 use anyhow::{Context, bail};
-use openenvcrypt_output::Finding;
+use openv_output::Finding;
 use serde::Deserialize;
 use std::{collections::BTreeMap, fs, path::Path};
 

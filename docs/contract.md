@@ -1,4 +1,4 @@
-# openenvcrypt contract
+# openv contract
 
 This file is the stable, machine-readable contract for `check`, `doctor`, and
 `diff`, plus the CLI exit-code scheme. Anything here is public and shared by
@@ -67,17 +67,17 @@ their value suppressed from error detail.
 ## CLI summary
 
 ```text
-openenvcrypt init
-openenvcrypt env create <env>
-openenvcrypt key generate <env>
-openenvcrypt edit <env>
-openenvcrypt set <env> <VAR>          # value read from stdin, never argv
-openenvcrypt check <env> [--format human|json]
-openenvcrypt example
-openenvcrypt exec <env> -- <cmd>...    # preserves child exit/signals
-openenvcrypt doctor [--format json]
-openenvcrypt diff <envA> <envB> [--format human|json]
-openenvcrypt rotate <env>
+openv init
+openv env create <env>
+openv key generate <env>
+openv edit <env>
+openv set <env> <VAR>          # value read from stdin, never argv
+openv check <env> [--format human|json]
+openv example
+openv exec <env> -- <cmd>...    # preserves child exit/signals
+openv doctor [--format json]
+openv diff <envA> <envB> [--format human|json]
+openv rotate <env>
 ```
 
 ## Stable CLI guarantees

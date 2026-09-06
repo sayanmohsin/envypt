@@ -872,32 +872,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
-name = "openenvcrypt"
+name = "openv"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "openenvcrypt-core",
- "openenvcrypt-crypto",
- "openenvcrypt-output",
- "openenvcrypt-runtime",
- "openenvcrypt-schema",
+ "openv-core",
+ "openv-crypto",
+ "openv-output",
+ "openv-runtime",
+ "openv-schema",
 ]
 
 [[package]]
-name = "openenvcrypt-cli"
+name = "openv-cli"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "openenvcrypt-core",
- "openenvcrypt-crypto",
- "openenvcrypt-output",
- "openenvcrypt-runtime",
- "openenvcrypt-schema",
+ "openv-core",
+ "openv-crypto",
+ "openv-output",
+ "openv-runtime",
+ "openv-schema",
 ]
 
 [[package]]
-name = "openenvcrypt-core"
+name = "openv-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -906,7 +906,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "openenvcrypt-crypto"
+name = "openv-crypto"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -921,7 +921,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "openenvcrypt-output"
+name = "openv-output"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -930,18 +930,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "openenvcrypt-runtime"
+name = "openv-runtime"
 version = "0.1.0"
 dependencies = [
  "anyhow",
 ]
 
 [[package]]
-name = "openenvcrypt-schema"
+name = "openv-schema"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "openenvcrypt-output",
+ "openv-output",
  "serde",
  "serde_yaml",
 ]

@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/openenvcrypt",
-    "crates/openenvcrypt-cli",
-    "crates/openenvcrypt-core",
-    "crates/openenvcrypt-crypto",
-    "crates/openenvcrypt-schema",
-    "crates/openenvcrypt-runtime",
-    "crates/openenvcrypt-output",
+    "crates/openv",
+    "crates/openv-cli",
+    "crates/openv-core",
+    "crates/openv-crypto",
+    "crates/openv-schema",
+    "crates/openv-runtime",
+    "crates/openv-output",
 ]
 
 [workspace.package]
@@ -15,7 +15,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.96"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/sayanmohsin/openenvcrypt"
+repository = "https://github.com/sayanmohsin/openv"
 
 [workspace.dependencies]
 anyhow = "1"
