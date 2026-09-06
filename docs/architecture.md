@@ -39,7 +39,7 @@ telemetry.
 ```text
 envypt.yaml        project config (environments, recipients, key files)
 config/env.schema.yaml   per-environment schema
-secrets/*.env.enc        SOPS-encrypted dotenv profiles
+secrets/*.env.enc        SOPS-encrypted env profiles
 .env.example             generated documentation example
 ```
 
