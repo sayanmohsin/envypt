@@ -1,5 +1,5 @@
 {
-  "name": "envypt",
+  "name": "@sayanmohsin/envypt",
   "version": "0.1.0",
   "description": "Local-first encrypted environment files (SOPS-compatible age)",
   "repository": {
