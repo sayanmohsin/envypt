@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["crates/envypt"]
+members = ["crates/open-envault"]
 
 [workspace.package]
 version = "0.2.0"
 edition = "2024"
 rust-version = "1.96"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/sayanmohsin/envypt"
+repository = "https://github.com/sayanmohsin/open-envault"
 
 [workspace.dependencies]
 anyhow = "1"

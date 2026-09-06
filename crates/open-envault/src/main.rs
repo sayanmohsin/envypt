@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
-use envypt::core::{Project, discover, environment, load};
-use envypt::schema::{example, load as load_schema, parse_env, validate};
+use open_envault::core::{Project, discover, environment, load};
+use open_envault::schema::{example, load as load_schema, parse_env, validate};
 use std::{
     env, fs,
     io::{self, Write},
@@ -10,7 +10,7 @@ use std::{
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "envypt", version, about = "Secure encrypted environment files")]
+#[command(name = "open_envault", version, about = "Secure encrypted environment files")]
 struct Cli {
     #[command(subcommand)]
     command: CommandKind,
@@ -71,7 +71,7 @@ fn project() -> Result<(PathBuf, Project)> {
     let path = discover(&env::current_dir()?)?;
     Ok((path.clone(), load(&path)?))
 }
-fn profile(name: &str) -> Result<(PathBuf, envypt::core::Environment)> {
+fn profile(name: &str) -> Result<(PathBuf, open_envault::core::Environment)> {
     let (path, project) = project()?;
     Ok((path, environment(&project, name)?.clone()))
 }
@@ -102,11 +102,11 @@ fn main() -> Result<()> {
             command,
         } => {
             let (path, p) = profile(&environment)?;
-            let values = parse_env(&envypt::crypto::decrypt_for(
+            let values = parse_env(&open_envault::crypto::decrypt_for(
                 &root(&path).join(&p.file),
                 Some(&environment),
             )?);
-            std::process::exit(envypt::runtime::exec(&command, &values)?);
+            std::process::exit(open_envault::runtime::exec(&command, &values)?);
         }
         CommandKind::Doctor => {
             let _ = project()?;
@@ -121,7 +121,7 @@ fn main() -> Result<()> {
         CommandKind::Env {
             command: EnvCommand::Create { environment },
         } => {
-            eprintln!("add environment {environment} to envypt.yaml");
+            eprintln!("add environment {environment} to open-envault.yaml");
             Ok(())
         }
         CommandKind::Key {
@@ -135,9 +135,9 @@ fn init() -> Result<()> {
     let r = env::current_dir()?;
     fs::create_dir_all(r.join("config"))?;
     fs::create_dir_all(r.join("secrets"))?;
-    if !r.join("envypt.yaml").exists() {
+    if !r.join("open-envault.yaml").exists() {
         fs::write(
-            r.join("envypt.yaml"),
+            r.join("open-envault.yaml"),
             "project: my-project\nenvironments:\n  dev:\n    file: secrets/dev.env.enc\n    schema: config/env.schema.yaml\n    recipients: []\n",
         )?;
     }
@@ -147,7 +147,7 @@ fn init() -> Result<()> {
     if !r.join(".sops.yaml").exists() {
         fs::write(r.join(".sops.yaml"), "creation_rules: []\n")?;
     }
-    eprintln!("initialized envypt project");
+    eprintln!("initialized open_envault project");
     Ok(())
 }
 
@@ -157,7 +157,7 @@ fn generate_key(name: &str) -> Result<()> {
         env::var_os("XDG_CONFIG_HOME")
             .map(PathBuf::from)
             .unwrap_or_else(|| PathBuf::from("~/.config"))
-            .join("envypt/keys")
+            .join("open-envault/keys")
             .join(format!("{name}.txt"))
     });
     let key_path = if key_path.to_string_lossy().starts_with("~/") {
@@ -165,7 +165,7 @@ fn generate_key(name: &str) -> Result<()> {
     } else {
         key_path
     };
-    let key = envypt::crypto::generate_key(&key_path)?;
+    let key = open_envault::crypto::generate_key(&key_path)?;
     println!(
         "{}",
         key.lines()
@@ -177,7 +177,7 @@ fn generate_key(name: &str) -> Result<()> {
 }
 fn check(name: &str, format: Format) -> Result<()> {
     let (path, p) = profile(name)?;
-    let values = parse_env(&envypt::crypto::decrypt_for(
+    let values = parse_env(&open_envault::crypto::decrypt_for(
         &root(&path).join(&p.file),
         Some(name),
     )?);
@@ -192,17 +192,17 @@ fn check(name: &str, format: Format) -> Result<()> {
                 }
             }
         }
-        Format::Json => println!("{}", envypt::output::json(&findings)?),
+        Format::Json => println!("{}", open_envault::output::json(&findings)?),
     };
     Ok(())
 }
 fn edit(name: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
-    let tmp = r.join(format!(".envypt-edit-{}", std::process::id()));
+    let tmp = r.join(format!(".open-envault-edit-{}", std::process::id()));
     fs::write(
         &tmp,
-        envypt::crypto::decrypt_for(&r.join(&p.file), Some(name))?,
+        open_envault::crypto::decrypt_for(&r.join(&p.file), Some(name))?,
     )?;
     let editor = p
         .editor
@@ -215,14 +215,14 @@ fn edit(name: &str) -> Result<()> {
     }
     let content = fs::read_to_string(&tmp)?;
     let _ = fs::remove_file(&tmp);
-    envypt::crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
+    open_envault::crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
 }
 fn set(name: &str, variable: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
     let encrypted = r.join(&p.file);
     let plain = if encrypted.exists() {
-        envypt::crypto::decrypt_for(&encrypted, Some(name))?
+        open_envault::crypto::decrypt_for(&encrypted, Some(name))?
     } else {
         String::new()
     };
@@ -236,5 +236,5 @@ fn set(name: &str, variable: &str) -> Result<()> {
         .into_iter()
         .map(|(k, v)| format!("{k}={v}\n"))
         .collect();
-    envypt::crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
+    open_envault::crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
 }

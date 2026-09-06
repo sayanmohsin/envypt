@@ -1,4 +1,4 @@
-# envypt architecture
+# open-envault architecture
 
 Local-first encrypted environment files. Ciphertext lives in Git; private keys
 live only on authorized machines; secrets are decrypted in memory and injected
@@ -12,9 +12,9 @@ telemetry.
   ecosystems (Arqen, NestJS/npm, Go) integrate by invoking the CLI or by
   linking the facade crate; they never reimplement encryption.
 - **Storage format is SOPS-compatible age.** Files produced by
-  `envypt` are plain SOPS files (age recipients + AES-256-GCM values +
+  `open-envault` are plain SOPS files (age recipients + AES-256-GCM values +
   a SOPS metadata block). Any official `sops`/`age` tooling can decrypt them,
-  and `envypt` decrypts files produced by official `sops`.
+  and `open-envault` decrypts files produced by official `sops`.
   No custom encryption format is introduced.
 - **Fail closed.** Invalid configuration, schema, key, or ciphertext abort the
   operation with a nonzero exit code and a redacted diagnostic.
@@ -24,22 +24,22 @@ telemetry.
 
 ## Crate responsibilities
 
-Single crate `envypt` (`crates/envypt`) provides the library + binary:
+Single crate `open-envault` (`crates/open-envault`) provides the library + binary:
 
 | Module | Responsibility |
 |---|---|
-| `envypt::core` | Project config (`envypt.yaml`), upward discovery, environment profiles, key-source resolution, atomic file IO. |
-| `envypt::crypto` | Native SOPS-over-age: data-key generation, age key wrapping per recipient, AES-256-GCM value encryption, SOPS metadata + MAC, key generation/parsing, permission enforcement. |
-| `envypt::schema` | Schema types, per-type validation, dotenv parse/write, `.env.example` generation. |
-| `envypt::runtime` | Child process execution, environment merging, signal forwarding, exit-code propagation. |
-| `envypt::output` | Redaction, one-way fingerprinting, JSON envelopes, shared error/exit-code contract. |
+| `open-envault::core` | Project config (`open-envault.yaml`), upward discovery, environment profiles, key-source resolution, atomic file IO. |
+| `open-envault::crypto` | Native SOPS-over-age: data-key generation, age key wrapping per recipient, AES-256-GCM value encryption, SOPS metadata + MAC, key generation/parsing, permission enforcement. |
+| `open-envault::schema` | Schema types, per-type validation, dotenv parse/write, `.env.example` generation. |
+| `open-envault::runtime` | Child process execution, environment merging, signal forwarding, exit-code propagation. |
+| `open-envault::output` | Redaction, one-way fingerprinting, JSON envelopes, shared error/exit-code contract. |
 
-Public API: `envypt::load_environment` (library, consumed by Arqen). Binary `envypt` (`src/main.rs`) handles the CLI.
+Public API: `open-envault::load_environment` (library, consumed by Arqen). Binary `open-envault` (`src/main.rs`) handles the CLI.
 
 ## Project layout on disk
 
 ```text
-envypt.yaml        project config (environments, recipients, key files)
+open-envault.yaml        project config (environments, recipients, key files)
 config/env.schema.yaml   per-environment schema
 secrets/*.env.enc        SOPS-encrypted env profiles
 .env.example             generated documentation example
@@ -70,9 +70,9 @@ closed.
 
 1. `OPENENCRYPT_AGE_KEY` — explicit identity, CI-friendly (never echoed).
 2. `SOPS_AGE_KEY` — compatibility with SOPS-based CI workflows.
-3. Profile `key_file` from `envypt.yaml`.
+3. Profile `key_file` from `open-envault.yaml`.
 4. Developer default:
-   `$XDG_CONFIG_HOME|~/.config/envypt/keys/<environment>.txt`.
+   `$XDG_CONFIG_HOME|~/.config/open-envault/keys/<environment>.txt`.
 5. Server/deploy key paths configured for deployment environments.
 
 Key files are enforced mode 0600 and must live outside the repository.

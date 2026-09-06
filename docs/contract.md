@@ -1,4 +1,4 @@
-# envypt contract
+# open-envault contract
 
 This file is the stable, machine-readable contract for `check`, `doctor`, and
 `diff`, plus the CLI exit-code scheme. Anything here is public and shared by
@@ -67,17 +67,17 @@ their value suppressed from error detail.
 ## CLI summary
 
 ```text
-envypt init
-envypt env create <env>
-envypt key generate <env>
-envypt edit <env>
-envypt set <env> <VAR>          # value read from stdin, never argv
-envypt check <env> [--format human|json]
-envypt example
-envypt exec <env> -- <cmd>...    # preserves child exit/signals
-envypt doctor [--format json]
-envypt diff <envA> <envB> [--format human|json]
-envypt rotate <env>
+open-envault init
+open-envault env create <env>
+open-envault key generate <env>
+open-envault edit <env>
+open-envault set <env> <VAR>          # value read from stdin, never argv
+open-envault check <env> [--format human|json]
+open-envault example
+open-envault exec <env> -- <cmd>...    # preserves child exit/signals
+open-envault doctor [--format json]
+open-envault diff <envA> <envB> [--format human|json]
+open-envault rotate <env>
 ```
 
 ## Stable CLI guarantees

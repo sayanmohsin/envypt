@@ -1,14 +1,14 @@
 {
-  "name": "@sayanmohsin/envypt",
+  "name": "open-envault",
   "version": "0.2.0",
   "description": "Local-first SOPS-compatible secrets for Git and Rust",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sayanmohsin/envypt.git"
+    "url": "git+https://github.com/sayanmohsin/open-envault.git"
   },
-  "homepage": "https://github.com/sayanmohsin/envypt#readme",
+  "homepage": "https://github.com/sayanmohsin/open-envault#readme",
   "bugs": {
-    "url": "https://github.com/sayanmohsin/envypt/issues"
+    "url": "https://github.com/sayanmohsin/open-envault/issues"
   },
   "license": "(Apache-2.0 OR MIT)",
   "keywords": [
@@ -24,7 +24,7 @@
     "node": ">=20"
   },
   "bin": {
-    "envypt": "bin/envypt.mjs"
+    "open-envault": "bin/open-envault.mjs"
   },
   "files": [
     "bin/",

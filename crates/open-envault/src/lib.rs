@@ -1,7 +1,7 @@
-//! Public API for envypt.
+//! Public API for open_envault.
 //!
 //! ```no_run
-//! if let Ok(values) = envypt::load_environment("dev") {
+//! if let Ok(values) = open_envault::load_environment("dev") {
 //!     let _ = values.contains_key("EXAMPLE");
 //! }
 //! ```

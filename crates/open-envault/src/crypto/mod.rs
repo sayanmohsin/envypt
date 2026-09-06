@@ -1,7 +1,7 @@
-//! Native SOPS-over-age encryption for envypt.
+//! Native SOPS-over-age encryption for open_envault.
 //!
 //! This crate implements the SOPS file format for dotenv documents with age
-//! recipients, so `envypt` needs no external `sops`/`rage` binaries and
+//! recipients, so `open_envault` needs no external `sops`/`rage` binaries and
 //! files remain interchangeable with official SOPS. See [`store`] for the
 //! format and [`keys`] for age key handling.
 
@@ -25,7 +25,7 @@ pub fn default_key_dir() -> PathBuf {
         .unwrap_or_else(|| {
             PathBuf::from(env::var("HOME").unwrap_or_else(|_| ".".into())).join(".config")
         })
-        .join("envypt")
+        .join("open_envault")
         .join("keys")
 }
 

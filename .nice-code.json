@@ -1,11 +1,11 @@
 {
   "profiles": ["default"],
-  "ignore": ["node_modules/**", "target/**", "crates/envypt/tests/fixtures/**"],
+  "ignore": ["node_modules/**", "target/**", "crates/open-envault/tests/fixtures/**"],
   "severity": {},
   "exceptions": [
     {
       "patternId": "AP-LOG-002",
-      "path": "crates/envypt/src/main.rs",
+      "path": "crates/open-envault/src/main.rs",
       "reason": "Primary CLI command results (key public output and check human/JSON reports) are intentional stdout outputs per docs/contract.md; diagnostics use stderr."
     }
   ]

@@ -16,9 +16,9 @@ wrapper workflows are added when the release milestone lands.
 
 ## Workspace layout
 
-Rust workspace, edition 2024, `rust-version = 1.96`. Single crate `envypt` at `crates/envypt`:
+Rust workspace, edition 2024, `rust-version = 1.96`. Single crate `open-envault` at `crates/open-envault`:
 
-- `envypt` crate — library (`envypt::load_environment`) + binary `envypt` (`src/main.rs`), consumed by Arqen and CLI
+- `open-envault` crate — library (`open-envault::load_environment`) + binary `open-envault` (`src/main.rs`), consumed by Arqen and CLI
 - Internal modules: `core` (project config, discovery, key-source resolution, atomic IO), `crypto` (SOPS-compatible age encryption), `schema` (validation, dotenv parse/write, `.env.example`), `runtime` (child process exec, env merging, signals), `output` (redaction, fingerprinting, JSON envelopes)
 
 Crate responsibilities and naming must not drift: cryptography, schema and
@@ -42,7 +42,7 @@ CLI; they never reimplement crypto.
 
 ## Crypto
 
-`envypt::crypto` implements the SOPS dotenv format natively (age
+`open-envault::crypto` implements the SOPS dotenv format natively (age
 recipients + AES-256-GCM `ENC[...]` values + flattened `sops_*` metadata). No
 external `sops`/`rage` binaries are required at runtime. Byte compatibility is
 guarded by golden fixtures produced with official `sops` plus an optional

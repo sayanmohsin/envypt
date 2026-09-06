@@ -11,7 +11,7 @@ try {
 }
 const child = spawn(bin, process.argv.slice(2), { stdio: "inherit" });
 child.on("error", (err) => {
-  console.error(`envypt: failed to spawn ${bin}: ${err.message}`);
+  console.error(`open-env: failed to spawn ${bin}: ${err.message}`);
   process.exit(1);
 });
 child.on("exit", (code, signal) => {
