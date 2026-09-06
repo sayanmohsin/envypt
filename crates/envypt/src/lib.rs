@@ -2,9 +2,7 @@
 //!
 //! ```no_run
 //! if let Ok(values) = envypt::load_environment("dev") {
-//!     for key in values.keys() {
-//!         println!("resolved {key}");
-//!     }
+//!     let _ = values.contains_key("EXAMPLE");
 //! }
 //! ```
 

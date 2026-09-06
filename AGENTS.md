@@ -71,3 +71,7 @@ Version lives in `[workspace.package]` in the root `Cargo.toml`; all crates
 inherit it via `version.workspace = true`. When the npm release milestone is
 added, the npm `package.json` version must match the workspace version (see
 `release-please-config.json` extra-files) and a parity check runs in CI.
+
+## Nice Code
+
+Use the project's `DESIGN.md` for product-specific UI decisions. Run `nice-code advise --project .` when adding a new surface and `nice-code --changed --project .` before handoff. Full scan: `nice-code --all --project .`.

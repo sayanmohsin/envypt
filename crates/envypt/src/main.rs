@@ -110,7 +110,7 @@ fn main() -> Result<()> {
         }
         CommandKind::Doctor => {
             let _ = project()?;
-            println!("project configuration: ok");
+            eprintln!("project configuration: ok");
             Ok(())
         }
         CommandKind::Edit { environment } => edit(&environment),
@@ -121,7 +121,7 @@ fn main() -> Result<()> {
         CommandKind::Env {
             command: EnvCommand::Create { environment },
         } => {
-            println!("add environment {environment} to envypt.yaml");
+            eprintln!("add environment {environment} to envypt.yaml");
             Ok(())
         }
         CommandKind::Key {
@@ -147,7 +147,7 @@ fn init() -> Result<()> {
     if !r.join(".sops.yaml").exists() {
         fs::write(r.join(".sops.yaml"), "creation_rules: []\n")?;
     }
-    println!("initialized envypt project");
+    eprintln!("initialized envypt project");
     Ok(())
 }
 
