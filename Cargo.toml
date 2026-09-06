@@ -31,3 +31,9 @@ base64 = "0.22"
 hex = "0.4"
 rand = "0.8"
 zeroize = "1"
+
+envypt-core = { path = "crates/envypt-core", version = "0.1.0" }
+envypt-crypto = { path = "crates/envypt-crypto", version = "0.1.0" }
+envypt-output = { path = "crates/envypt-output", version = "0.1.0" }
+envypt-runtime = { path = "crates/envypt-runtime", version = "0.1.0" }
+envypt-schema = { path = "crates/envypt-schema", version = "0.1.0" }

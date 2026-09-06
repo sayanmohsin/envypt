@@ -4,10 +4,12 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Schema validation for envypt"
 
 [dependencies]
 anyhow.workspace = true
 serde.workspace = true
 serde_yaml.workspace = true
-envypt-output = { path = "../envypt-output" }
+envypt-output.workspace = true
 

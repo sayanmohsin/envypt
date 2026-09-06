@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace = true
 description = "Secure, local-first encrypted environment files"
 
 [[bin]]
@@ -13,8 +14,8 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 clap.workspace = true
-envypt-core = { path = "../envypt-core" }
-envypt-crypto = { path = "../envypt-crypto" }
-envypt-output = { path = "../envypt-output" }
-envypt-runtime = { path = "../envypt-runtime" }
-envypt-schema = { path = "../envypt-schema" }
+envypt-core.workspace = true
+envypt-crypto.workspace = true
+envypt-output.workspace = true
+envypt-runtime.workspace = true
+envypt-schema.workspace = true

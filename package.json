@@ -1,0 +1,42 @@
+{
+  "name": "envypt",
+  "version": "0.1.0",
+  "description": "Local-first encrypted environment files (SOPS-compatible age)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sayanmohsin/envypt.git"
+  },
+  "homepage": "https://github.com/sayanmohsin/envypt#readme",
+  "bugs": {
+    "url": "https://github.com/sayanmohsin/envypt/issues"
+  },
+  "license": "(Apache-2.0 OR MIT)",
+  "keywords": [
+    "sops",
+    "age",
+    "dotenv",
+    "secrets",
+    "env",
+    "encryption"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "envypt": "bin/envypt.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "prebuilds/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check:version": "node scripts/check-version.mjs",
+    "pack:check": "npm pack --dry-run"
+  }
+}
