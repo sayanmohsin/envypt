@@ -18,16 +18,16 @@ wrapper workflows are added when the release milestone lands.
 
 Rust workspace, edition 2024, `rust-version = 1.96`. Crates:
 
-- `openv` (planned facade lib) — public API consumers depend on
-  (e.g. `openv::load_environment("dev")`).
-- `openv-cli` — the `openv` binary.
-- `openv-core` — project config, discovery, key-source resolution,
+- `envypt` (planned facade lib) — public API consumers depend on
+  (e.g. `envypt::load_environment("dev")`).
+- `envypt-cli` — the `envypt` binary.
+- `envypt-core` — project config, discovery, key-source resolution,
   atomic file IO.
-- `openv-crypto` — SOPS-compatible age encryption (native Rust).
-- `openv-schema` — schema types, validation, dotenv parse/write,
+- `envypt-crypto` — SOPS-compatible age encryption (native Rust).
+- `envypt-schema` — schema types, validation, dotenv parse/write,
   `.env.example`.
-- `openv-runtime` — child process execution, env merging, signals.
-- `openv-output` — redaction, fingerprinting, JSON envelopes.
+- `envypt-runtime` — child process execution, env merging, signals.
+- `envypt-output` — redaction, fingerprinting, JSON envelopes.
 
 Crate responsibilities and naming must not drift: cryptography, schema and
 runtime logic live only in the Rust core. Thin wrappers (npm, Go) invoke the
@@ -50,7 +50,7 @@ CLI; they never reimplement crypto.
 
 ## Crypto
 
-`openv-crypto` implements the SOPS dotenv format natively (age
+`envypt-crypto` implements the SOPS dotenv format natively (age
 recipients + AES-256-GCM `ENC[...]` values + flattened `sops_*` metadata). No
 external `sops`/`rage` binaries are required at runtime. Byte compatibility is
 guarded by golden fixtures produced with official `sops` plus an optional

@@ -1,0 +1,15 @@
+[package]
+name = "envypt"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Local-first encrypted environment files (SOPS-compatible age)"
+
+[dependencies]
+anyhow.workspace = true
+envypt-core = { path = "../envypt-core" }
+envypt-crypto = { path = "../envypt-crypto" }
+envypt-output = { path = "../envypt-output" }
+envypt-runtime = { path = "../envypt-runtime" }
+envypt-schema = { path = "../envypt-schema" }

@@ -29,18 +29,18 @@ fn default_schema() -> String {
 pub fn discover(start: &Path) -> anyhow::Result<PathBuf> {
     let mut current = start.canonicalize()?;
     loop {
-        let candidate = current.join("openv.yaml");
+        let candidate = current.join("envypt.yaml");
         if candidate.is_file() {
             return Ok(candidate);
         }
         if !current.pop() {
-            bail!("openv.yaml not found")
+            bail!("envypt.yaml not found")
         }
     }
 }
 pub fn load(path: &Path) -> anyhow::Result<Project> {
     let text = fs::read_to_string(path).with_context(|| format!("read {}", path.display()))?;
-    serde_yaml::from_str(&text).context("parse openv.yaml")
+    serde_yaml::from_str(&text).context("parse envypt.yaml")
 }
 pub fn environment<'a>(project: &'a Project, name: &str) -> anyhow::Result<&'a Environment> {
     project

@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/openv",
-    "crates/openv-cli",
-    "crates/openv-core",
-    "crates/openv-crypto",
-    "crates/openv-schema",
-    "crates/openv-runtime",
-    "crates/openv-output",
+    "crates/envypt",
+    "crates/envypt-cli",
+    "crates/envypt-core",
+    "crates/envypt-crypto",
+    "crates/envypt-schema",
+    "crates/envypt-runtime",
+    "crates/envypt-output",
 ]
 
 [workspace.package]
@@ -15,7 +15,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.96"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/sayanmohsin/openv"
+repository = "https://github.com/sayanmohsin/envypt"
 
 [workspace.dependencies]
 anyhow = "1"

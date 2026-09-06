@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
-use openv_core::{Project, discover, environment, load};
-use openv_schema::{example, load as load_schema, parse_env, validate};
+use envypt_core::{Project, discover, environment, load};
+use envypt_schema::{example, load as load_schema, parse_env, validate};
 use std::{
     env, fs,
     io::{self, Write},
@@ -10,7 +10,7 @@ use std::{
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "openv", version, about = "Secure encrypted environment files")]
+#[command(name = "envypt", version, about = "Secure encrypted environment files")]
 struct Cli {
     #[command(subcommand)]
     command: CommandKind,
@@ -71,7 +71,7 @@ fn project() -> Result<(PathBuf, Project)> {
     let path = discover(&env::current_dir()?)?;
     Ok((path.clone(), load(&path)?))
 }
-fn profile(name: &str) -> Result<(PathBuf, openv_core::Environment)> {
+fn profile(name: &str) -> Result<(PathBuf, envypt_core::Environment)> {
     let (path, project) = project()?;
     Ok((path, environment(&project, name)?.clone()))
 }
@@ -102,11 +102,11 @@ fn main() -> Result<()> {
             command,
         } => {
             let (path, p) = profile(&environment)?;
-            let values = parse_env(&openv_crypto::decrypt_for(
+            let values = parse_env(&envypt_crypto::decrypt_for(
                 &root(&path).join(&p.file),
                 Some(&environment),
             )?);
-            std::process::exit(openv_runtime::exec(&command, &values)?);
+            std::process::exit(envypt_runtime::exec(&command, &values)?);
         }
         CommandKind::Doctor => {
             let _ = project()?;
@@ -121,7 +121,7 @@ fn main() -> Result<()> {
         CommandKind::Env {
             command: EnvCommand::Create { environment },
         } => {
-            println!("add environment {environment} to openv.yaml");
+            println!("add environment {environment} to envypt.yaml");
             Ok(())
         }
         CommandKind::Key {
@@ -135,9 +135,9 @@ fn init() -> Result<()> {
     let r = env::current_dir()?;
     fs::create_dir_all(r.join("config"))?;
     fs::create_dir_all(r.join("secrets"))?;
-    if !r.join("openv.yaml").exists() {
+    if !r.join("envypt.yaml").exists() {
         fs::write(
-            r.join("openv.yaml"),
+            r.join("envypt.yaml"),
             "project: my-project\nenvironments:\n  dev:\n    file: secrets/dev.env.enc\n    schema: config/env.schema.yaml\n    recipients: []\n",
         )?;
     }
@@ -147,7 +147,7 @@ fn init() -> Result<()> {
     if !r.join(".sops.yaml").exists() {
         fs::write(r.join(".sops.yaml"), "creation_rules: []\n")?;
     }
-    println!("initialized openv project");
+    println!("initialized envypt project");
     Ok(())
 }
 
@@ -157,7 +157,7 @@ fn generate_key(name: &str) -> Result<()> {
         env::var_os("XDG_CONFIG_HOME")
             .map(PathBuf::from)
             .unwrap_or_else(|| PathBuf::from("~/.config"))
-            .join("openv/keys")
+            .join("envypt/keys")
             .join(format!("{name}.txt"))
     });
     let key_path = if key_path.to_string_lossy().starts_with("~/") {
@@ -165,7 +165,7 @@ fn generate_key(name: &str) -> Result<()> {
     } else {
         key_path
     };
-    let key = openv_crypto::generate_key(&key_path)?;
+    let key = envypt_crypto::generate_key(&key_path)?;
     println!(
         "{}",
         key.lines()
@@ -177,7 +177,7 @@ fn generate_key(name: &str) -> Result<()> {
 }
 fn check(name: &str, format: Format) -> Result<()> {
     let (path, p) = profile(name)?;
-    let values = parse_env(&openv_crypto::decrypt_for(
+    let values = parse_env(&envypt_crypto::decrypt_for(
         &root(&path).join(&p.file),
         Some(name),
     )?);
@@ -192,17 +192,17 @@ fn check(name: &str, format: Format) -> Result<()> {
                 }
             }
         }
-        Format::Json => println!("{}", openv_output::json(&findings)?),
+        Format::Json => println!("{}", envypt_output::json(&findings)?),
     };
     Ok(())
 }
 fn edit(name: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
-    let tmp = r.join(format!(".openv-edit-{}", std::process::id()));
+    let tmp = r.join(format!(".envypt-edit-{}", std::process::id()));
     fs::write(
         &tmp,
-        openv_crypto::decrypt_for(&r.join(&p.file), Some(name))?,
+        envypt_crypto::decrypt_for(&r.join(&p.file), Some(name))?,
     )?;
     let editor = p
         .editor
@@ -215,14 +215,14 @@ fn edit(name: &str) -> Result<()> {
     }
     let content = fs::read_to_string(&tmp)?;
     let _ = fs::remove_file(&tmp);
-    openv_crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
+    envypt_crypto::encrypt(&content, &r.join(&p.file), &p.recipients)
 }
 fn set(name: &str, variable: &str) -> Result<()> {
     let (path, p) = profile(name)?;
     let r = root(&path);
     let encrypted = r.join(&p.file);
     let plain = if encrypted.exists() {
-        openv_crypto::decrypt_for(&encrypted, Some(name))?
+        envypt_crypto::decrypt_for(&encrypted, Some(name))?
     } else {
         String::new()
     };
@@ -236,5 +236,5 @@ fn set(name: &str, variable: &str) -> Result<()> {
         .into_iter()
         .map(|(k, v)| format!("{k}={v}\n"))
         .collect();
-    openv_crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
+    envypt_crypto::encrypt(&text, &r.join(&p.file), &p.recipients)
 }

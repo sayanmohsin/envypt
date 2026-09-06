@@ -1,5 +1,5 @@
 [package]
-name = "openv-cli"
+name = "envypt-cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,14 +7,14 @@ license.workspace = true
 description = "Secure, local-first encrypted environment files"
 
 [[bin]]
-name = "openv"
+name = "envypt"
 path = "src/main.rs"
 
 [dependencies]
 anyhow.workspace = true
 clap.workspace = true
-openv-core = { path = "../openv-core" }
-openv-crypto = { path = "../openv-crypto" }
-openv-output = { path = "../openv-output" }
-openv-runtime = { path = "../openv-runtime" }
-openv-schema = { path = "../openv-schema" }
+envypt-core = { path = "../envypt-core" }
+envypt-crypto = { path = "../envypt-crypto" }
+envypt-output = { path = "../envypt-output" }
+envypt-runtime = { path = "../envypt-runtime" }
+envypt-schema = { path = "../envypt-schema" }

@@ -1,7 +1,7 @@
-//! Native SOPS-over-age encryption for openv.
+//! Native SOPS-over-age encryption for envypt.
 //!
 //! This crate implements the SOPS file format for dotenv documents with age
-//! recipients, so `openv` needs no external `sops`/`rage` binaries and
+//! recipients, so `envypt` needs no external `sops`/`rage` binaries and
 //! files remain interchangeable with official SOPS. See [`store`] for the
 //! format and [`keys`] for age key handling.
 
@@ -25,7 +25,7 @@ pub fn default_key_dir() -> PathBuf {
         .unwrap_or_else(|| {
             PathBuf::from(env::var("HOME").unwrap_or_else(|_| ".".into())).join(".config")
         })
-        .join("openv")
+        .join("envypt")
         .join("keys")
 }
 

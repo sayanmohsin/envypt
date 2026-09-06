@@ -1,4 +1,4 @@
-# openv
+# envypt
 
 Local-first encrypted environment files for Rust projects and deployment
 servers. Ciphertext belongs in Git; private keys stay on authorized machines,
@@ -18,12 +18,12 @@ are still being built out.
 ## Usage (work in progress)
 
 ```text
-openv init
-openv env create dev
-openv key generate dev
-openv set dev SECRET_TOKEN     # value read from stdin
-openv check dev
-openv exec dev -- npm start
+envypt init
+envypt env create dev
+envypt key generate dev
+envypt set dev SECRET_TOKEN     # value read from stdin
+envypt check dev
+envypt exec dev -- npm start
 ```
 
 ## Security
