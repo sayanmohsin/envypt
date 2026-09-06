@@ -6,6 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Local-first SOPS-compatible secrets for Git and Rust"
+readme = "README.md"
 
 [dependencies]
 anyhow.workspace = true
