@@ -5,7 +5,7 @@ use openenvcrypt_schema::{example, load as load_schema, parse_env, validate};
 use std::{
     env, fs,
     io::{self, Write},
-    path::PathBuf,
+    path::{Path, PathBuf},
     process::Command,
 };
 
@@ -79,7 +79,7 @@ fn profile(name: &str) -> Result<(PathBuf, openenvcrypt_core::Environment)> {
     let (path, project) = project()?;
     Ok((path, environment(&project, name)?.clone()))
 }
-fn root(path: &PathBuf) -> &std::path::Path {
+fn root(path: &Path) -> &std::path::Path {
     path.parent().unwrap_or(path)
 }
 

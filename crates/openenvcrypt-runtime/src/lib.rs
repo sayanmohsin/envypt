@@ -23,7 +23,7 @@ impl SignalCode for std::process::ExitStatus {
     fn signal(&self) -> Option<i32> {
         #[cfg(unix)]
         {
-            return std::os::unix::process::ExitStatusExt::signal(self);
+            std::os::unix::process::ExitStatusExt::signal(self)
         }
         #[cfg(not(unix))]
         {

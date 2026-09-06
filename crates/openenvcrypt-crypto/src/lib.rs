@@ -28,7 +28,7 @@ pub fn decrypt(path: &Path) -> anyhow::Result<String> {
     if !output.status.success() {
         bail!("sops could not decrypt {}", path.display())
     }
-    Ok(String::from_utf8(output.stdout).context("decrypted content was not UTF-8")?)
+    String::from_utf8(output.stdout).context("decrypted content was not UTF-8")
 }
 pub fn encrypt(content: &str, path: &Path, recipients: &[String]) -> anyhow::Result<()> {
     let sops = tool("sops")?;

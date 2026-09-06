@@ -1,18 +1,13 @@
 [package]
-name = "openenvcrypt-cli"
+name = "openenvcrypt"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Secure, local-first encrypted environment files"
-
-[[bin]]
-name = "openenvcrypt"
-path = "src/main.rs"
+description = "Local-first encrypted environment files (SOPS-compatible age)"
 
 [dependencies]
 anyhow.workspace = true
-clap.workspace = true
 openenvcrypt-core = { path = "../openenvcrypt-core" }
 openenvcrypt-crypto = { path = "../openenvcrypt-crypto" }
 openenvcrypt-output = { path = "../openenvcrypt-output" }

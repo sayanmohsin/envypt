@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/openenvcrypt",
     "crates/openenvcrypt-cli",
     "crates/openenvcrypt-core",
     "crates/openenvcrypt-crypto",
