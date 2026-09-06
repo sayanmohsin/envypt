@@ -1,7 +1,7 @@
 {
   "name": "@sayanmohsin/envypt",
   "version": "0.2.1",
-  "description": "Local-first encrypted environment files (SOPS-compatible age)",
+  "description": "Local-first SOPS-compatible secrets for Git and Rust",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sayanmohsin/envypt.git"

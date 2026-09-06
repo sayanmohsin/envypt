@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Local-first encrypted environment files (SOPS-compatible age)"
+description = "Local-first SOPS-compatible secrets for Git and Rust"
 
 [dependencies]
 anyhow.workspace = true

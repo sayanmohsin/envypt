@@ -24,22 +24,24 @@ telemetry.
 
 ## Crate responsibilities
 
-| Crate | Responsibility |
+Single crate `envypt` (`crates/envypt`) provides the library + binary:
+
+| Module | Responsibility |
 |---|---|
-| `envypt` | Facade library crate exposing the public Rust API (`load_environment`, `check`, `doctor`, `diff`, `exec`). Consumed by Arqen. |
-| `envypt-cli` | The `envypt` binary: clap surface, command orchestration, human/JSON output. |
-| `envypt-core` | Project config (`envypt.yaml`), upward discovery, environment profiles, key-source resolution, atomic file IO. |
-| `envypt-crypto` | Native SOPS-over-age: data-key generation, age key wrapping per recipient, AES-256-GCM value encryption, SOPS metadata + MAC, key generation/parsing, permission enforcement. |
-| `envypt-schema` | Schema types, per-type validation, dotenv parse/write, `.env.example` generation. |
-| `envypt-runtime` | Child process execution, environment merging, signal forwarding, exit-code propagation. |
-| `envypt-output` | Redaction, one-way fingerprinting, JSON envelopes, shared error/exit-code contract. |
+| `envypt::core` | Project config (`envypt.yaml`), upward discovery, environment profiles, key-source resolution, atomic file IO. |
+| `envypt::crypto` | Native SOPS-over-age: data-key generation, age key wrapping per recipient, AES-256-GCM value encryption, SOPS metadata + MAC, key generation/parsing, permission enforcement. |
+| `envypt::schema` | Schema types, per-type validation, dotenv parse/write, `.env.example` generation. |
+| `envypt::runtime` | Child process execution, environment merging, signal forwarding, exit-code propagation. |
+| `envypt::output` | Redaction, one-way fingerprinting, JSON envelopes, shared error/exit-code contract. |
+
+Public API: `envypt::load_environment` (library, consumed by Arqen). Binary `envypt` (`src/main.rs`) handles the CLI.
 
 ## Project layout on disk
 
 ```text
 envypt.yaml        project config (environments, recipients, key files)
 config/env.schema.yaml   per-environment schema
-secrets/*.env.enc        SOPS-encrypted dotenv profiles
+secrets/*.env.enc        SOPS-encrypted env profiles
 .env.example             generated documentation example
 ```
 
