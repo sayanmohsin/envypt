@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/sayanmohsin/open-envault/compare/v0.2.2...v0.2.3) (2026-09-06)
+
+
+### Bug Fixes
+
+* include README and LICENSE in crate package ([cf434e1](https://github.com/sayanmohsin/open-envault/commit/cf434e129e4854fb582b647d5cbe286ada247516))
+
 ## [0.2.2](https://github.com/sayanmohsin/open-envault/compare/v0.2.1...v0.2.2) (2026-09-06)
 
 
