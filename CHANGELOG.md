@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/sayanmohsin/open-envault/compare/v0.3.0...v0.3.1) (2026-09-07)
+
+
+### Bug Fixes
+
+* upgrade open-envault dependencies ([3ce4c28](https://github.com/sayanmohsin/open-envault/commit/3ce4c286d54a6868b32d11c15bf7a2210648fb93))
+
 ## [0.3.0](https://github.com/sayanmohsin/open-envault/compare/v0.2.3...v0.3.0) (2026-09-07)
 
 
