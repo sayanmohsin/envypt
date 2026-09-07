@@ -45,7 +45,7 @@ document on stdout:
 Field semantics:
 
 - `ok`/`exit` mirror the process exit status.
-- `findings[].kind` is one of `missing`, `added`, `removed`, `invalid`,
+- `findings[].kind` is one of `missing`, `extra`, `added`, `removed`, `invalid`,
   `type`, `config`, `key`, `schema`, `decrypt`. `message` never embeds a
   secret value.
 - Fingerprints are `HMAC-SHA256(pepper, value)` truncated to 12 bytes hex.
@@ -75,7 +75,9 @@ open-envault set <env> <VAR>          # value read from stdin, never argv
 open-envault check <env> [--format human|json]
 open-envault example
 open-envault exec <env> -- <cmd>...    # preserves child exit/signals
-open-envault doctor [--format json]
+open-envault exec <env> --force -- <cmd>... # profile values override inherited env
+open-envault import <env> --format json|dotenv [--merge|--replace]
+open-envault doctor [--format human|json]
 open-envault diff <envA> <envB> [--format human|json]
 open-envault rotate <env>
 ```
@@ -89,3 +91,16 @@ open-envault rotate <env>
   is required or left behind.
 - Invalid configuration, schema, key, or ciphertext always fails closed with
   code 3 and a redacted diagnostic on stderr.
+- `import` reads JSON or dotenv only from stdin, rejects malformed input and
+  invalid variable names, and never prints imported values.
+- `import --merge` preserves existing profile values not present in the input;
+  `--replace` starts from an empty profile.
+- `exec` leaves inherited variables authoritative by default; `exec --force`
+  makes profile values authoritative for overlapping names.
+- `check`, `doctor`, and `diff` return exit code 4 when validation findings or differences
+  are present; their JSON envelopes include `ok`, `exit`, and respectively
+  `findings`, `environments`, or `variables`.
+- `diff` requires `OPENENVAULT_DIFF_PEPPER`; fingerprints are HMAC-SHA256
+  values truncated to 12 bytes of hexadecimal output.
+- `rotate` decrypts and atomically re-encrypts one profile using its configured
+  recipients. Change the configured recipients first to rotate recipients.

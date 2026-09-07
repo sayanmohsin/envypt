@@ -46,6 +46,13 @@ oenv check dev --format json
 oenv exec dev -- npm start
 ```
 
+During a gradual migration, import an existing JSON or dotenv export through
+stdin without creating a plaintext file:
+
+```bash
+doppler secrets download --no-file --format=json | oenv import dev --format json --merge
+```
+
 `open-envault.yaml` example:
 
 ```yaml
@@ -66,14 +73,23 @@ oenv key generate <env>
 open-envault set <env> <VAR>            # reads value from stdin
 open-envault edit <env>                 # $EDITOR on a secure temp file
 open-envault check <env> [--format human|json]
-oenv doctor [--format json]
-oenv diff <envA> <envB> [--format json]
+oenv doctor [--format human|json]
+oenv diff <envA> <envB> [--format human|json]
 oenv rotate <env>
 oenv exec <env> -- <cmd> [args...]
+oenv exec <env> --force -- <cmd> [args...]
+oenv import <env> --format json|dotenv [--merge|--replace]
 oenv example                    # regenerate .env.example from schema
 ```
 
 `set` never takes a value on the command line; `exec` forwards signals and preserves the child’s exit code; diagnostics never print secret values (one-way `HMAC-SHA256` fingerprints only).
+
+`import` reads values only from stdin, validates variable names, supports
+allowlists and excludes, and atomically encrypts the profile. `--merge`
+preserves existing variables; `--replace` starts from an empty profile. By
+default, inherited environment values win over profile values. `exec --force`
+makes profile values authoritative for overlapping names, which enables a
+gradual migration from another environment injector.
 
 ## Configuration
 

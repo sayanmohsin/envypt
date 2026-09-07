@@ -57,6 +57,28 @@ pub fn parse_env(text: &str) -> BTreeMap<String, String> {
         .collect()
 }
 
+pub fn parse_env_strict(text: &str) -> anyhow::Result<BTreeMap<String, String>> {
+    let mut values = BTreeMap::new();
+    for (line_number, line) in text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let Some((key, value)) = line.split_once('=') else {
+            bail!("invalid dotenv line {}", line_number + 1)
+        };
+        let key = key.trim();
+        if key.is_empty() || values.contains_key(key) {
+            bail!(
+                "invalid or duplicate dotenv variable on line {}",
+                line_number + 1
+            )
+        }
+        values.insert(key.to_owned(), value.trim().trim_matches('"').to_owned());
+    }
+    Ok(values)
+}
+
 pub fn validate(
     schema: &Schema,
     values: &BTreeMap<String, String>,
@@ -96,6 +118,15 @@ pub fn validate(
                 variable: name.clone(),
                 kind: "invalid".into(),
                 message: format!("invalid {} value", rule.kind),
+            });
+        }
+    }
+    for name in values.keys() {
+        if !schema.variables.contains_key(name) {
+            findings.push(Finding {
+                variable: name.clone(),
+                kind: "extra".into(),
+                message: "variable is not defined in the schema".into(),
             });
         }
     }
