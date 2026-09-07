@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/sayanmohsin/open-envault/compare/v0.2.3...v0.3.0) (2026-09-07)
+
+
+### Features
+
+* harden encrypted environment workflows ([6f3e47f](https://github.com/sayanmohsin/open-envault/commit/6f3e47fff6836472a4c9cf549f183d18a866bc84))
+
 ## [0.2.3](https://github.com/sayanmohsin/open-envault/compare/v0.2.2...v0.2.3) (2026-09-06)
 
 
