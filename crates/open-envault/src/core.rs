@@ -40,7 +40,7 @@ pub fn discover(start: &Path) -> anyhow::Result<PathBuf> {
 }
 pub fn load(path: &Path) -> anyhow::Result<Project> {
     let text = fs::read_to_string(path).with_context(|| format!("read {}", path.display()))?;
-    serde_yaml::from_str(&text).context("parse open-envault.yaml")
+    yaml_serde::from_str(&text).context("parse open-envault.yaml")
 }
 pub fn environment<'a>(project: &'a Project, name: &str) -> anyhow::Result<&'a Environment> {
     project

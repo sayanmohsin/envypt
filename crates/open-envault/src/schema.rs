@@ -34,7 +34,7 @@ fn default_secret() -> bool {
 pub fn load(path: &Path) -> anyhow::Result<Schema> {
     let text =
         fs::read_to_string(path).with_context(|| format!("read schema {}", path.display()))?;
-    let schema: Schema = serde_yaml::from_str(&text).context("parse schema YAML")?;
+    let schema: Schema = yaml_serde::from_str(&text).context("parse schema YAML")?;
     if schema.variables.is_empty() {
         bail!("schema contains no variables")
     }

@@ -486,7 +486,7 @@ fn create_environment(name: &str) -> Result<()> {
             editor: None,
         },
     );
-    let text = serde_yaml::to_string(&project)?;
+    let text = yaml_serde::to_string(&project)?;
     open_envault::core::atomic_write(&path, text.as_bytes())?;
     eprintln!("created environment {name}; add recipients before importing secrets");
     Ok(())

@@ -14,16 +14,18 @@ use aes_gcm::{
 };
 use anyhow::{Context, bail};
 use base64::Engine;
-use rand::RngCore;
+use rand::{TryRng, rngs::SysRng};
 
 type Cipher = AesGcm<Aes256, U32>;
 
 const PREFIX: &str = "ENC[AES256_GCM,data:";
 
-fn random_bytes<const N: usize>() -> [u8; N] {
+fn random_bytes<const N: usize>() -> anyhow::Result<[u8; N]> {
     let mut buf = [0u8; N];
-    rand::rngs::OsRng.fill_bytes(&mut buf);
-    buf
+    let mut rng = SysRng;
+    rng.try_fill_bytes(&mut buf)
+        .map_err(|_| anyhow::anyhow!("system RNG unavailable"))?;
+    Ok(buf)
 }
 
 fn b64(bytes: &[u8]) -> String {
@@ -49,10 +51,11 @@ pub fn encrypt_kind(
     }
     let cipher =
         Cipher::new_from_slice(key).map_err(|_| anyhow::anyhow!("invalid AES key length"))?;
-    let iv = random_bytes::<32>();
-    let nonce = Nonce::<Cipher>::from_slice(&iv);
+    let iv = random_bytes::<32>().context("generate AES-GCM nonce")?;
+    let nonce = Nonce::<Cipher>::try_from(iv.as_slice())
+        .map_err(|_| anyhow::anyhow!("invalid AES-GCM nonce length"))?;
     let encrypted = cipher
-        .encrypt(nonce, Payload { msg: plain, aad })
+        .encrypt(&nonce, Payload { msg: plain, aad })
         .map_err(|_| anyhow::anyhow!("AES-GCM encryption failed"))?;
     let split = encrypted
         .len()
@@ -120,10 +123,11 @@ pub fn decrypt(enc: &str, key: &[u8; 32], aad: &[u8]) -> anyhow::Result<String> 
     let mut combined = Vec::with_capacity(parsed.data.len() + parsed.tag.len());
     combined.extend_from_slice(&parsed.data);
     combined.extend_from_slice(&parsed.tag);
-    let nonce = Nonce::<Cipher>::from_slice(&parsed.iv);
+    let nonce = Nonce::<Cipher>::try_from(parsed.iv.as_slice())
+        .map_err(|_| anyhow::anyhow!("invalid AES-GCM nonce length"))?;
     let plain = cipher
         .decrypt(
-            nonce,
+            &nonce,
             Payload {
                 msg: &combined,
                 aad,

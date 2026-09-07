@@ -206,7 +206,9 @@ pub fn encrypt(plaintext: &str, recipients: &[Recipient]) -> Result<String> {
     }
 
     let mut data_key = [0u8; 32];
-    rand::RngCore::fill_bytes(&mut rand::rngs::OsRng, &mut data_key);
+    let mut rng = rand::rngs::SysRng;
+    rand::TryRng::try_fill_bytes(&mut rng, &mut data_key)
+        .map_err(|_| anyhow::anyhow!("system RNG unavailable"))?;
 
     let mut mac_values = Vec::new();
     let mut lines = Vec::new();
