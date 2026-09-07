@@ -177,7 +177,7 @@ jobs:
 
   npm-publish:
     name: Publish npm package
-    needs: [release-please, github-release]
+    needs: [release-please, build, github-release]
     if: needs.release-please.outputs.release_created == 'true' || needs.release-please.outputs.retry == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -193,6 +193,67 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+      - name: Stage platform binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p \
+            prebuilds/darwin-arm64 \
+            prebuilds/darwin-x64 \
+            prebuilds/linux-arm64 \
+            prebuilds/linux-x64 \
+            prebuilds/win32-x64
+
+          cp artifacts/binary-aarch64-apple-darwin/oenv-aarch64-apple-darwin \
+            prebuilds/darwin-arm64/oenv
+          cp artifacts/binary-x86_64-apple-darwin/oenv-x86_64-apple-darwin \
+            prebuilds/darwin-x64/oenv
+          cp artifacts/binary-aarch64-unknown-linux-gnu/oenv-aarch64-unknown-linux-gnu \
+            prebuilds/linux-arm64/oenv
+          cp artifacts/binary-x86_64-unknown-linux-gnu/oenv-x86_64-unknown-linux-gnu \
+            prebuilds/linux-x64/oenv
+          cp artifacts/binary-x86_64-pc-windows-msvc/oenv-x86_64-pc-windows-msvc.exe \
+            prebuilds/win32-x64/oenv.exe
+
+          chmod +x \
+            prebuilds/darwin-arm64/oenv \
+            prebuilds/darwin-x64/oenv \
+            prebuilds/linux-arm64/oenv \
+            prebuilds/linux-x64/oenv
+      - name: Assert npm package contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --dry-run --json > npm-pack-dry-run.json
+          node - <<'NODE'
+          const fs = require("node:fs");
+
+          const result = JSON.parse(fs.readFileSync("npm-pack-dry-run.json", "utf8"));
+          const files = result.flatMap((entry) => entry.files ?? []).map((entry) => entry.path);
+          const required = [
+            "prebuilds/darwin-arm64/oenv",
+            "prebuilds/darwin-x64/oenv",
+            "prebuilds/linux-arm64/oenv",
+            "prebuilds/linux-x64/oenv",
+            "prebuilds/win32-x64/oenv.exe",
+          ];
+          const missing = required.filter((file) => !files.includes(file));
+          const forbidden = files.filter((file) =>
+            /(?:^|\/)(?:\.env(?:\.|$)|.*(?:\.key|\.pem)$|target(?:\/|$)|node_modules(?:\/|$))/.test(file)
+          );
+
+          if (missing.length > 0) {
+            throw new Error(`Missing package files: ${missing.join(", ")}`);
+          }
+          if (forbidden.length > 0) {
+            throw new Error(`Forbidden package files: ${forbidden.join(", ")}`);
+          }
+          console.log(`npm package assertion passed: ${files.length} files`);
+          NODE
+          rm -f npm-pack-dry-run.json
       - name: Publish if missing
         env:
           VERSION: ${{ needs.release-please.outputs.version }}
